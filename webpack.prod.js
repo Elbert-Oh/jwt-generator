@@ -9,7 +9,7 @@ const OptimizeCssAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 const common = require("./webpack.common");
 
 const entryPath = path.resolve(__dirname, "src/index.ts");
-const outputPath = path.resolve(__dirname, "dist");
+const outputPath = path.resolve(__dirname, "docs");
 
 module.exports = merge(common, {
   mode: "production",
@@ -59,7 +59,7 @@ module.exports = merge(common, {
     }
   },
   plugins: [
-    new CleanWebpackPlugin(["dist"]),
+    new CleanWebpackPlugin(["docs"]),
     new MiniCssExtractPlugin({
       filename: "jwt-generator.[hash].css"
     }),
