@@ -31,7 +31,11 @@
           <input v-model='secret' type='text' placeholder='Secret (string length >= 16)' />
           <button @click='generateBase64UrlSecret'>Encode secret to base64url</button>
         </div>
-        
+
+        <div>
+          <input v-model='base64UrlEncodedSecret' type='text' placeholder='Base64url Encoded Secret' />
+        </div>
+
         <div>
           <span class='bold teal'>Your base64url-encoded secret: </span>
           <span>{{ base64UrlEncodedSecret }}</span>
@@ -71,7 +75,10 @@ export default Vue.extend({
       this.base64UrlEncodedSecret = base64UrlEncode(this.secret);
     },
     generateJwt(): void {
-      if(!this.validateSecret()) return;
+      if(!this.base64UrlEncodedSecret) {
+        alert('Please generate base64url encoded secret!');
+        return;
+      }
 
       this.jwt = createJwt('HS256', {
         iss: this.issuer,
