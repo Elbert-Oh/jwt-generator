@@ -52,7 +52,7 @@ module.exports = merge(common, {
       cacheGroups: {
         vendors: {
           test: /[\\/]node_modules[\\/](vue|crypto-js\/hmac-sha256|crypto-js\/enc-base64)[\\/]/,
-          filename: 'vendors.[hash].js',
+          filename: 'vendors.[contenthash].js',
           chunks: 'all'
         }
       }
