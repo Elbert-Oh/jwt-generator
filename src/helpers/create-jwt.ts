@@ -1,6 +1,6 @@
 import createHmacSha256 from 'crypto-js/hmac-sha256';
 import toBase64 from 'crypto-js/enc-base64';
-import { base64UrlEncode, base64ToBase64Url } from './base64url-encode';
+import { base64UrlEncode, base64ToBase64Url } from './base64url';
 import { JwtHeader, JwtClaims } from './jwt-types';
 
 export default function(algorithm: string, claims: JwtClaims, secret: string): string {

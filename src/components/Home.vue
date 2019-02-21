@@ -47,7 +47,7 @@
 
 <script lang='ts'>
 import Vue from 'vue';
-import { base64UrlEncode } from '../helpers/base64url-encode';
+import { base64UrlEncode, base64UrlDecode } from '../helpers/base64url';
 import createJwt from '../helpers/create-jwt';
 
 export default Vue.extend({
@@ -78,6 +78,10 @@ export default Vue.extend({
       if(!this.base64UrlEncodedSecret) {
         alert('Please generate base64url encoded secret!');
         return;
+      }
+
+      if(!this.secret) {
+        this.secret = base64UrlDecode(this.base64UrlEncodedSecret);
       }
 
       this.jwt = createJwt('HS256', {
