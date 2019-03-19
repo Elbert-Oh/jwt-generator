@@ -19,10 +19,14 @@
           </select>
         </div>
         <div>
-          <input v-model='issuer' type='text' placeholder='Issuer' />
-        </div>
-        <div>
-          <input v-model='audience' type='text' placeholder='Audience' />
+          <div class='bold teal'>Claims:</div>
+          <textarea
+            v-model='claims'
+            @keydown.tab.prevent='handleTabPress'>
+          </textarea>
+          <div class='claim-error'>
+            {{ claimError }}
+          </div>
         </div>
       </div>
 
@@ -53,41 +57,60 @@ import createJwt from '../helpers/create-jwt';
 export default Vue.extend({
   data() {
     return {
-      issuer: '' as string,
-      audience: '' as string,
+      claims: '{\n\n}' as string,
+      claimInJson: {} as object,
+      claimError: '' as string,
       secret: '' as string,
-      expiration: new Date() as Date,
       base64UrlEncodedSecret: '' as string,
       jwt: '' as string
     };
   },
   methods: {
-    validateSecret(): boolean {
+    handleTabPress(event: any) {
+      const originalStartPosition = event.target.selectionStart;
+      const startPosition = this.claims.slice(0, event.target.selectionStart);
+      const endPosition = this.claims.slice(event.target.selectionStart);
+
+      this.claims = `${startPosition}\t${endPosition}`;
+
+      event.target.value = this.claims;
+      event.target.selectionEnd = event.target.selectionStart = originalStartPosition + 1
+    },
+    validateSecret() {
       if(this.secret.length >= 16) return true;
 
       this.secret = '';
       alert('Secret has to be longer than 16 characters');
       return false;
     },
-    generateBase64UrlSecret(): void {
+    generateBase64UrlSecret() {
       if(!this.validateSecret()) return;
 
       this.base64UrlEncodedSecret = base64UrlEncode(this.secret);
     },
-    generateJwt(): void {
+    generateJwt() {
       if(!this.base64UrlEncodedSecret) {
         alert('Please generate base64url encoded secret!');
         return;
       }
 
-      if(!this.secret) {
-        this.secret = base64UrlDecode(this.base64UrlEncodedSecret);
-      }
+      this.secret = base64UrlDecode(this.base64UrlEncodedSecret);
 
-      this.jwt = createJwt('HS256', {
-        iss: this.issuer,
-        aud: this.audience
-      }, this.secret)
+      this.jwt = createJwt('HS256', this.claimInJson, this.secret);
+    }
+  },
+  watch: {
+    claims: function(newValue) {
+      try {
+        this.claimError = '';
+
+        const jsonifiedClaim = JSON.parse(newValue);
+
+        this.claimInJson = jsonifiedClaim;
+      }
+      catch(ex) {
+        this.claimError = ex.message;
+      }
     }
   }
 })
@@ -104,7 +127,7 @@ h1 {
   font-size: 3.5em;
 }
 
-span.bold {
+.bold {
   font-weight: bold;
 }
 
@@ -147,6 +170,27 @@ select {
   padding: 10px;
   border-radius: 5px;
   cursor: pointer;
+}
+
+textarea {
+  resize: none;
+  height: 15em;
+  width: 30em;
+  border-radius: 20px;
+  padding: 20px;
+  font-size: 1em;
+  color: orange;
+  background-color: #333;
+
+  &:focus {
+    outline: none;
+  }
+}
+
+div.claim-error {
+  padding-top: 1em;
+  padding-left: 2em;
+  color: red;
 }
 
 div.generate-jwt-btn {
